@@ -18,20 +18,6 @@ $(function () {
     return arr;
   }
   function esc(s) { return $('<div>').text(s == null ? '' : s).html(); }
-  // Carga el PDF de la etiqueta en un iframe oculto y abre el diálogo de impresión del navegador.
-  function printLabel(url) {
-    $('#sensei-print-frame').remove();
-    var f = document.createElement('iframe');
-    f.id = 'sensei-print-frame';
-    f.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;';
-    f.onload = function () {
-      try { f.contentWindow.focus(); f.contentWindow.print(); }
-      catch (e) { window.open(url, '_blank'); } // ponytail: fallback si el navegador bloquea print() en iframe
-    };
-    f.src = url;
-    document.body.appendChild(f);
-  }
-  $p.on('click', '.sensei-print', function (e) { e.preventDefault(); printLabel($(this).attr('href')); });
 
   // Paquetes
   $('#sensei-pkg-add').on('click', function () {
@@ -120,12 +106,12 @@ $(function () {
         $('#sensei-panel .card-header-title').text(t.shipments + ' (' + $('#sensei-shipments tbody tr').length + ')').prepend('<i class="material-icons">local_shipping</i> ');
       }
       var h = '<strong>' + t.created + '</strong> Tracking: <code>' + esc(r.tracking_number) + '</code> ' +
-        '<a class="btn btn-sm btn-outline-secondary ml-2 sensei-print" href="' + r.label_url + '"><i class="material-icons">print</i> ' + t.label + '</a>';
+        '<a class="btn btn-sm btn-outline-secondary ml-2" target="_blank" href="' + r.label_url + '"><i class="material-icons">print</i> ' + t.label + '</a>';
       if (r.pickup_code) h += '<br>' + t.pickupScheduled + ' <code>' + esc(r.pickup_code) + '</code>.';
       if (r.pickup_message) h += '<br><small>' + esc(r.pickup_message) + '</small>';
       h += '<br><a href="#" class="sensei-reload">' + t.reload + '</a> ' + t.reloadHint;
       $('#sensei-result').html(alertBox(data.pickup_enabled && !r.pickup_code ? 'warning' : 'success', h));
-      printLabel(r.label_url);
+      window.open(r.label_url, '_blank');
     }).fail(function () { $('#sensei-result').html(alertBox('danger', t.commError)); $b.prop('disabled', false); });
   });
 
