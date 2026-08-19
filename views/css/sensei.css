@@ -1,0 +1,13 @@
+#sensei-panel .material-icons { font-size: 18px; vertical-align: middle; }
+#sensei-panel address .material-icons { font-size: 14px; color: #6c868e; }
+#sensei-panel h4 { margin-bottom: .75rem; }
+#sensei-panel .form-group { margin-bottom: 1.25rem; }
+#sensei-panel .form-control-label,
+#sensei-panel .md-checkbox { margin-bottom: .5rem; display: block; }
+#sensei-panel .md-checkbox label { font-weight: 600; margin-bottom: 0; }
+#sensei-panel .form-text { margin-top: .35rem; }
+#sensei-panel .sensei-rate { cursor: pointer; }
+#sensei-panel .sensei-rate.table-active,
+#sensei-panel .sensei-rate.table-active td { background: #eaf6fb !important; color: inherit; font-weight: 600; }
+#sensei-packages input { min-width: 70px; }
+#sensei-packages th { border-top: 0; }

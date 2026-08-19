@@ -1,0 +1,27 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: sensei
+
+      - name: Build zip
+        run: |
+          rm -rf sensei/.git sensei/.github sensei/.gitignore
+          zip -r sensei-${GITHUB_REF_NAME}.zip sensei
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: sensei-${{ github.ref_name }}.zip
+          generate_release_notes: true
