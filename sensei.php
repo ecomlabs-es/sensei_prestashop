@@ -134,6 +134,9 @@ class Sensei extends Module
         $out = '';
         if (Tools::isSubmit('submitSensei')) {
             foreach (array_keys(self::CONFIG) as $k) {
+                if ($k === 'SENSEI_CRON_TOKEN') {
+                    continue; // no está en el formulario
+                }
                 Configuration::updateValue($k, trim((string) Tools::getValue($k)));
             }
             $out .= $this->displayConfirmation($this->l('Settings saved.'));
@@ -150,6 +153,9 @@ class Sensei extends Module
             return ['type' => 'text', 'label' => $label, 'name' => $name, 'desc' => $desc, 'required' => $required];
         };
         $states = array_merge([['id_order_state' => '', 'name' => $this->l('-- Do not change --')]], OrderState::getOrderStates((int) $this->context->language->id));
+        if (!Configuration::get('SENSEI_CRON_TOKEN')) { // instalaciones/actualizaciones sin token generado
+            Configuration::updateValue('SENSEI_CRON_TOKEN', Tools::passwdGen(24));
+        }
         $cron = $this->context->link->getModuleLink('sensei', 'cron', ['token' => Configuration::get('SENSEI_CRON_TOKEN')]);
         $form = ['form' => [
             'legend' => ['title' => 'Sensei - SendSei Pro', 'icon' => 'icon-truck'],
