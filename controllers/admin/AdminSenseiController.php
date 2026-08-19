@@ -64,12 +64,32 @@ class AdminSenseiController extends ModuleAdminController
         parent::initPageHeaderToolbar();
     }
 
+    /** UUID del envío validado (evita inyección en cabeceras/URL). */
+    private function uuidParam()
+    {
+        $uuid = (string) Tools::getValue('uuid');
+        if (!preg_match('/^[0-9a-fA-F-]{36}$/', $uuid)) {
+            throw new Exception('Invalid shipment uuid.');
+        }
+
+        return $uuid;
+    }
+
+    /** Comprueba que el empleado puede editar (acciones que crean/cancelan envíos). */
+    private function requireEdit()
+    {
+        if (!$this->access('edit')) {
+            throw new Exception($this->module->l('You do not have permission to do this.', 'adminsenseicontroller'));
+        }
+    }
+
     public function initContent()
     {
         if (Tools::getValue('action') === 'label' && Tools::getValue('uuid')) {
-            $pdf = $this->api()->label(Tools::getValue('uuid'));
+            $uuid = $this->uuidParam();
+            $pdf = $this->api()->label($uuid);
             header('Content-Type: application/pdf');
-            header('Content-Disposition: inline; filename="sensei-' . Tools::getValue('uuid') . '.pdf"');
+            header('Content-Disposition: inline; filename="sensei-' . $uuid . '.pdf"');
             echo $pdf;
             exit;
         }
@@ -160,7 +180,7 @@ class AdminSenseiController extends ModuleAdminController
     {
         $this->respond(function () {
             $path = (string) Tools::getValue('path');
-            if (strpos($path, '/api/v1/') !== 0) {
+            if (!preg_match('#^/api/v1/[a-z0-9-]+/[a-z0-9-]+/$#', $path)) {
                 throw new Exception($this->module->l('Invalid points path.', 'adminsenseicontroller'));
             }
             $q = ['postal_code' => Tools::getValue('postal_code')];
@@ -183,6 +203,7 @@ class AdminSenseiController extends ModuleAdminController
     public function ajaxProcessShip()
     {
         $this->respond(function () {
+            $this->requireEdit();
             $order = new Order((int) Tools::getValue('id_order'));
             if (!Validate::isLoadedObject($order)) {
                 throw new Exception($this->module->l('Order not found.', 'adminsenseicontroller'));
@@ -294,7 +315,11 @@ class AdminSenseiController extends ModuleAdminController
     public function ajaxProcessCancel()
     {
         $this->respond(function () {
-            $uuid = (string) Tools::getValue('uuid');
+            $this->requireEdit();
+            $uuid = $this->uuidParam();
+            if (!Db::getInstance()->getValue('SELECT id_sensei_shipment FROM `' . _DB_PREFIX_ . 'sensei_shipment` WHERE uuid="' . pSQL($uuid) . '"')) {
+                throw new Exception($this->module->l('Shipment not found.', 'adminsenseicontroller'));
+            }
             $res = $this->api()->cancelShipment($uuid, $this->module->l('Cancelled from PrestaShop', 'adminsenseicontroller'));
             Db::getInstance()->update('sensei_shipment', ['status' => 'cancelled'], 'uuid="' . pSQL($uuid) . '"');
 

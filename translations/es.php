@@ -111,3 +111,4 @@ $_MODULE['<{sensei}prestashop>shipment_row_154d77bd3c5bf6876da9eb3f5beed978'] = 
 $_MODULE['<{sensei}prestashop>shipment_row_b021df6aac4654c454f46c77646e745f'] = 'Etiqueta';
 $_MODULE['<{sensei}prestashop>shipment_row_ec3d3df9a706350b750f9f76a47206ec'] = 'Actualizar seguimiento';
 $_MODULE['<{sensei}prestashop>shipment_row_542ff865bf3dad1a2ddc2b71921ad01a'] = 'Cancelar envío';
+$_MODULE['<{sensei}prestashop>adminsenseicontroller_a9afb8868ed93f0764b76237e71dea32'] = 'No tienes permiso para hacer esto.';

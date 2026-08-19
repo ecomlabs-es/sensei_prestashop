@@ -9,7 +9,8 @@ class SenseiCronModuleFrontController extends ModuleFrontController
 {
     public function init()
     {
-        if (!Configuration::get('SENSEI_CRON_TOKEN') || Tools::getValue('token') !== Configuration::get('SENSEI_CRON_TOKEN')) {
+        $token = (string) Configuration::get('SENSEI_CRON_TOKEN');
+        if ($token === '' || !hash_equals($token, (string) Tools::getValue('token'))) {
             header('HTTP/1.1 403 Forbidden');
             exit('Invalid token');
         }
