@@ -11,7 +11,7 @@
           </td>
           <td class="text-right text-nowrap">
             {if $s.status != 'cancelled'}
-            <a class="btn btn-outline-secondary btn-sm" target="_blank" href="{$sensei_ajax|escape:'html':'UTF-8'}&action=label&uuid={$s.uuid|escape:'url'}" title="{l s='PDF label' mod='sensei'}"><i class="material-icons">print</i> {l s='Label' mod='sensei'}</a>
+            <a class="btn btn-outline-secondary btn-sm sensei-print" href="{$sensei_ajax|escape:'html':'UTF-8'}&action=label&uuid={$s.uuid|escape:'url'}" title="{l s='PDF label' mod='sensei'}"><i class="material-icons">print</i> {l s='Label' mod='sensei'}</a>
             <button type="button" class="btn btn-outline-secondary btn-sm sensei-track" data-tracking="{$s.tracking_number|escape:'html':'UTF-8'}" title="{l s='Refresh tracking' mod='sensei'}"><i class="material-icons">refresh</i></button>
             <button type="button" class="btn btn-outline-danger btn-sm sensei-cancel" title="{l s='Cancel shipment' mod='sensei'}"><i class="material-icons">cancel</i></button>
             {/if}
