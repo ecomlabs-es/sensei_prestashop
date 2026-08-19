@@ -15,6 +15,12 @@ jobs:
         with:
           path: sensei
 
+      - name: Set module version from tag
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          sed -i "s/\$this->version = '[^']*';/\$this->version = '${VERSION}';/" sensei/sensei.php
+          grep -q "version = '${VERSION}'" sensei/sensei.php
+
       - name: Build zip
         run: |
           rm -rf sensei/.git sensei/.github sensei/.gitignore
