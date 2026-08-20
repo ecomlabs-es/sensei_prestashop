@@ -29,6 +29,8 @@ class Sensei extends Module
         'SENSEI_DEF_W' => '20',
         'SENSEI_DEF_H' => '15',
         'SENSEI_COD_MODULES' => 'codfee,ps_cashondelivery',
+        'SENSEI_ALLOWED_COURIERS' => '',
+        'SENSEI_MAX_HOURS' => '',
         'SENSEI_PICKUP_FROM' => '09:00',
         'SENSEI_PICKUP_TO' => '14:00',
         'SENSEI_CONTENT' => 'Pedido',
@@ -176,6 +178,8 @@ class Sensei extends Module
                 $t($this->l('Default width (cm)'), 'SENSEI_DEF_W'),
                 $t($this->l('Default height (cm)'), 'SENSEI_DEF_H'),
                 $t($this->l('Cash on delivery payment modules'), 'SENSEI_COD_MODULES', $this->l('Comma separated. If the order was paid with one of them, cash on delivery is enabled automatically.')),
+                $t($this->l('Couriers: allowed'), 'SENSEI_ALLOWED_COURIERS', $this->l('Comma separated names as shown in quotes (e.g. Zeleris, Correos Express). Empty = all.')),
+                $t($this->l('Couriers: max delivery time (hours)'), 'SENSEI_MAX_HOURS', $this->l('Hide services with a longer estimated delivery time. Services without an estimate are kept. Empty = no limit.')),
                 $t($this->l('Pickup: time from'), 'SENSEI_PICKUP_FROM', 'HH:MM'),
                 $t($this->l('Pickup: time to'), 'SENSEI_PICKUP_TO', 'HH:MM'),
                 $t($this->l('Content description'), 'SENSEI_CONTENT', $this->l('The order reference is appended')),
@@ -303,6 +307,19 @@ class Sensei extends Module
     public static function getShipments($idOrder)
     {
         return Db::getInstance()->executeS('SELECT * FROM `' . _DB_PREFIX_ . 'sensei_shipment` WHERE id_order=' . (int) $idOrder . ' ORDER BY id_sensei_shipment DESC') ?: [];
+    }
+
+    /** Peor plazo en horas de un texto tipo "24/48h", "4 - 10 dias" o "24 horas"; 0 si no se puede saber. */
+    public static function deliveryHours($s)
+    {
+        $s = Tools::strtolower($s);
+        if (preg_match_all('/(\d+)\s*h/', $s, $m)) {
+            return (float) max($m[1]);
+        }
+        if ((strpos($s, 'dia') !== false || strpos($s, 'día') !== false) && preg_match_all('/\d+/', $s, $m)) {
+            return max($m[0]) * 24.0;
+        }
+        return 0.0;
     }
 
     /** Dirección de origen en formato API a partir de la configuración. */
