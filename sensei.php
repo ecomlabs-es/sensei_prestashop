@@ -200,7 +200,15 @@ class Sensei extends Module
                     'values' => ['query' => array_map(function ($slug) {
                         return ['id' => $slug, 'name' => self::COURIERS[$slug]];
                     }, array_keys(self::COURIERS)), 'id' => 'id', 'name' => 'name']],
-                $t($this->l('Couriers: max delivery time (hours)'), 'SENSEI_MAX_HOURS', $this->l('Hide services with a longer estimated delivery time. Services without an estimate are kept. Empty = no limit.')),
+                ['type' => 'select', 'label' => $this->l('Couriers: max delivery time'), 'name' => 'SENSEI_MAX_HOURS',
+                    'desc' => $this->l('Hide services with a longer estimated delivery time. Services without an estimate are kept.'),
+                    'options' => ['query' => [
+                        ['id' => '', 'name' => $this->l('-- No limit --')],
+                        ['id' => '24', 'name' => '24h'],
+                        ['id' => '48', 'name' => '48h'],
+                        ['id' => '72', 'name' => '72h'],
+                        ['id' => '96', 'name' => '96h'],
+                    ], 'id' => 'id', 'name' => 'name']],
                 $t($this->l('Pickup: time from'), 'SENSEI_PICKUP_FROM', 'HH:MM'),
                 $t($this->l('Pickup: time to'), 'SENSEI_PICKUP_TO', 'HH:MM'),
                 $t($this->l('Content description'), 'SENSEI_CONTENT', $this->l('The order reference is appended')),
