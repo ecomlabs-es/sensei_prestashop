@@ -81,6 +81,7 @@ $(function () {
     var data = {
       packages: packages(),
       service_id: selected.service_id,
+      courier_id: selected.courier_id || 0,
       courier_name: selected.courier, service_name: selected.service, service_total: selected.total,
       cod_enabled: $('#sensei-cod').is(':checked') ? 1 : 0, cod_amount: $('#sensei-cod-amount').val(),
       insured_amount: $('#sensei-insured').val(),

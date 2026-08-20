@@ -224,6 +224,7 @@ class AdminSenseiController extends ModuleAdminController
                 'origin' => Sensei::originAddress(),
                 'destination' => Sensei::destinationAddress($order),
                 'courier_service_id' => $serviceId,
+                'courier_id' => (int) Tools::getValue('courier_id') ?: null,
                 'packages' => $this->packages(true, $content),
                 'label_format' => 'PDF',
                 'customer_reference' => Tools::substr('#' . $order->reference, 0, 40),
