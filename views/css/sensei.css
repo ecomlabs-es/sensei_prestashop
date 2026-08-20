@@ -11,3 +11,4 @@
 #sensei-panel .sensei-rate.table-active td { background: #eaf6fb !important; color: inherit; font-weight: 600; }
 #sensei-packages input { min-width: 70px; }
 #sensei-packages th { border-top: 0; }
+#sensei-panel .sensei-courier-logo { height: 22px; width: auto; margin-right: 6px; vertical-align: middle; border-radius: 3px; }

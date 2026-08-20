@@ -25,7 +25,7 @@
   confirmCancel: '{l s='Cancel this shipment in Sensei?' mod='sensei' js=1}',
   shipments: '{l s='Sensei - Shipments' mod='sensei' js=1}'
 };</script>
-<div class="card mt-2" id="sensei-panel" data-ajax="{$sensei_ajax|escape:'html':'UTF-8'}" data-order="{$sensei_order->id|intval}">
+<div class="card mt-2" id="sensei-panel" data-ajax="{$sensei_ajax|escape:'html':'UTF-8'}" data-order="{$sensei_order->id|intval}" data-img="{$sensei_img|escape:'html':'UTF-8'}">
   <div class="card-header">
     <h3 class="card-header-title"><i class="material-icons">local_shipping</i> {l s='Sensei - Shipments' mod='sensei'} ({$sensei_shipments|count})</h3>
   </div>

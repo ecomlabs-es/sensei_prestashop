@@ -18,6 +18,11 @@ $(function () {
     return arr;
   }
   function esc(s) { return $('<div>').text(s == null ? '' : s).html(); }
+  function courierLogo(name) {
+    var slug = String(name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    if (slug.indexOf('dhl') === 0) slug = 'dhl'; // ponytail: un logo para todo DHL
+    return '<img class="sensei-courier-logo" src="' + $p.data('img') + slug + '.webp" alt="" onerror="this.remove()"> ';
+  }
 
   // Paquetes
   $('#sensei-pkg-add').on('click', function () {
@@ -41,7 +46,7 @@ $(function () {
       if (!r.rates.length) { $('#sensei-rates').html(alertBox('warning', t.noRates)); return; }
       var h = '<h4 class="mb-2">' + t.rates + ' <small class="text-muted">(' + r.rates.length + ')</small></h4><table class="table table-hover" id="sensei-rates-table"><thead><tr><th style="width:40px"></th><th>' + t.courier + '</th><th>' + t.service + '</th><th>' + t.delivery + '</th><th class="text-right">' + t.total + '</th></tr></thead><tbody>';
       $.each(r.rates, function (i, q) {
-        h += '<tr class="sensei-rate" data-i="' + i + '"><td><div class="md-radio"><label><input type="radio" name="sensei_rate" value="' + i + '"><i class="md-radio-control"></i></label></div></td><td>' + esc(q.courier) + '</td><td>' + esc(q.service) +
+        h += '<tr class="sensei-rate" data-i="' + i + '"><td><div class="md-radio"><label><input type="radio" name="sensei_rate" value="' + i + '"><i class="md-radio-control"></i></label></div></td><td class="text-nowrap">' + courierLogo(q.courier) + esc(q.courier) + '</td><td>' + esc(q.service) +
           (q.requires_delivery_point ? ' <span class="badge badge-info">' + t.deliveryPoint + '</span>' : '') + (q.requires_pickup_point ? ' <span class="badge badge-info">' + t.pickupPoint + '</span>' : '') +
           '</td><td>' + esc(q.delivery_time || '-') + '</td><td class="text-right"><strong>' + esc(q.total) + ' ' + esc(q.currency) + '</strong></td></tr>';
       });

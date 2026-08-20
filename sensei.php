@@ -227,6 +227,7 @@ class Sensei extends Module
 
         $this->context->smarty->assign([
             'sensei_ajax' => $this->context->link->getAdminLink('AdminSensei'),
+            'sensei_img' => $this->_path . 'views/img/couriers/',
             'sensei_order' => $order,
             'sensei_dest' => [
                 'name' => $address->firstname . ' ' . $address->lastname,
