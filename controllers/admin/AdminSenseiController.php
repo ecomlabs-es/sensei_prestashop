@@ -163,14 +163,15 @@ class AdminSenseiController extends ModuleAdminController
             }
             $res = $this->api()->quote($payload);
             $allowed = array_filter(array_map('trim', explode(',', Tools::strtolower((string) Configuration::get('SENSEI_ALLOWED_COURIERS')))));
+            $minHours = (float) Configuration::get('SENSEI_MIN_HOURS');
             $maxHours = (float) Configuration::get('SENSEI_MAX_HOURS');
             // Solo entrega a domicilio: fuera servicios que requieren punto de entrega/recogida.
-            $rates = array_values(array_filter($res['results'] ?? [], function ($r) use ($allowed, $maxHours) {
+            $rates = array_values(array_filter($res['results'] ?? [], function ($r) use ($allowed, $minHours, $maxHours) {
                 if ($allowed && !in_array(Tools::strtolower(trim((string) $r['courier'])), $allowed, true)) {
                     return false;
                 }
                 $hours = Sensei::deliveryHours((string) ($r['delivery_time'] ?? ''));
-                if ($maxHours && $hours && $hours > $maxHours) {
+                if ($hours && (($minHours && $hours < $minHours) || ($maxHours && $hours > $maxHours))) {
                     return false;
                 }
                 return empty($r['requires_delivery_point']) && empty($r['requires_pickup_point'])

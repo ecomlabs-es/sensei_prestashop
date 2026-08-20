@@ -30,6 +30,7 @@ class Sensei extends Module
         'SENSEI_DEF_H' => '15',
         'SENSEI_COD_MODULES' => 'codfee,ps_cashondelivery',
         'SENSEI_ALLOWED_COURIERS' => '',
+        'SENSEI_MIN_HOURS' => '',
         'SENSEI_MAX_HOURS' => '',
         'SENSEI_PICKUP_FROM' => '09:00',
         'SENSEI_PICKUP_TO' => '14:00',
@@ -200,8 +201,16 @@ class Sensei extends Module
                     'values' => ['query' => array_map(function ($slug) {
                         return ['id' => $slug, 'name' => self::COURIERS[$slug]];
                     }, array_keys(self::COURIERS)), 'id' => 'id', 'name' => 'name']],
-                ['type' => 'select', 'label' => $this->l('Couriers: max delivery time'), 'name' => 'SENSEI_MAX_HOURS',
-                    'desc' => $this->l('Hide services with a longer estimated delivery time. Services without an estimate are kept.'),
+                ['type' => 'select', 'label' => $this->l('Couriers: delivery time from'), 'name' => 'SENSEI_MIN_HOURS',
+                    'options' => ['query' => [
+                        ['id' => '', 'name' => $this->l('-- No minimum --')],
+                        ['id' => '24', 'name' => '24h'],
+                        ['id' => '48', 'name' => '48h'],
+                        ['id' => '72', 'name' => '72h'],
+                        ['id' => '96', 'name' => '96h'],
+                    ], 'id' => 'id', 'name' => 'name']],
+                ['type' => 'select', 'label' => $this->l('Couriers: delivery time to'), 'name' => 'SENSEI_MAX_HOURS',
+                    'desc' => $this->l('Only services whose estimated delivery time is within the range are shown. Services without an estimate are kept.'),
                     'options' => ['query' => [
                         ['id' => '', 'name' => $this->l('-- No limit --')],
                         ['id' => '24', 'name' => '24h'],
