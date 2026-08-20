@@ -40,6 +40,9 @@ class Sensei extends Module
         'SENSEI_STATE_DELIVERED' => '',
         'SENSEI_CRON_TOKEN' => '',
     ];
+    // Catálogo de la API de SendSei; el nombre debe coincidir con el `courier` de las cotizaciones.
+    const COURIERS = ['correos' => 'Correos', 'correos_express' => 'Correos Express', 'dhl_parcel' => 'DHL Parcel',
+        'inpost' => 'InPost', 'seur' => 'Seur', 'ups' => 'UPS', 'zeleris' => 'Zeleris'];
     const DELIVERED = ['entregado', 'entregado_pudo', 'delivered'];
     const FINAL = ['entregado', 'entregado_pudo', 'delivered', 'devuelto', 'cancelado', 'cancelled', 'destruido', 'reexpedido',
         'siniestrado_sin_informacion', 'siniestrado_rotura', 'siniestrado_robo', 'siniestrado_perdida'];
@@ -139,6 +142,16 @@ class Sensei extends Module
                 if ($k === 'SENSEI_CRON_TOKEN') {
                     continue; // no está en el formulario
                 }
+                if ($k === 'SENSEI_ALLOWED_COURIERS') { // checkboxes; todos marcados se guarda vacío (= todos, incluidos futuros)
+                    $sel = [];
+                    foreach (self::COURIERS as $slug => $name) {
+                        if (Tools::getValue('SENSEI_COURIER_' . $slug)) {
+                            $sel[] = $name;
+                        }
+                    }
+                    Configuration::updateValue($k, count($sel) === count(self::COURIERS) ? '' : implode(',', $sel));
+                    continue;
+                }
                 Configuration::updateValue($k, trim((string) Tools::getValue($k)));
             }
             $out .= $this->displayConfirmation($this->l('Settings saved.'));
@@ -150,6 +163,10 @@ class Sensei extends Module
         $helper->token = Tools::getAdminTokenLite('AdminModules');
         foreach (array_keys(self::CONFIG) as $k) {
             $helper->fields_value[$k] = Configuration::get($k);
+        }
+        $allowed = array_filter(array_map('trim', explode(',', Tools::strtolower((string) Configuration::get('SENSEI_ALLOWED_COURIERS')))));
+        foreach (self::COURIERS as $slug => $name) {
+            $helper->fields_value['SENSEI_COURIER_' . $slug] = !$allowed || in_array(Tools::strtolower($name), $allowed, true);
         }
         $t = function ($label, $name, $desc = '', $required = false) {
             return ['type' => 'text', 'label' => $label, 'name' => $name, 'desc' => $desc, 'required' => $required];
@@ -178,7 +195,11 @@ class Sensei extends Module
                 $t($this->l('Default width (cm)'), 'SENSEI_DEF_W'),
                 $t($this->l('Default height (cm)'), 'SENSEI_DEF_H'),
                 $t($this->l('Cash on delivery payment modules'), 'SENSEI_COD_MODULES', $this->l('Comma separated. If the order was paid with one of them, cash on delivery is enabled automatically.')),
-                $t($this->l('Couriers: allowed'), 'SENSEI_ALLOWED_COURIERS', $this->l('Comma separated names as shown in quotes (e.g. Zeleris, Correos Express). Empty = all.')),
+                ['type' => 'checkbox', 'label' => $this->l('Couriers: allowed'), 'name' => 'SENSEI_COURIER',
+                    'desc' => $this->l('Unchecked couriers are hidden from quotes.'),
+                    'values' => ['query' => array_map(function ($slug) {
+                        return ['id' => $slug, 'name' => self::COURIERS[$slug]];
+                    }, array_keys(self::COURIERS)), 'id' => 'id', 'name' => 'name']],
                 $t($this->l('Couriers: max delivery time (hours)'), 'SENSEI_MAX_HOURS', $this->l('Hide services with a longer estimated delivery time. Services without an estimate are kept. Empty = no limit.')),
                 $t($this->l('Pickup: time from'), 'SENSEI_PICKUP_FROM', 'HH:MM'),
                 $t($this->l('Pickup: time to'), 'SENSEI_PICKUP_TO', 'HH:MM'),
